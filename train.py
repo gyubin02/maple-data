@@ -14,11 +14,11 @@ from PIL import Image
 from peft import LoraConfig, TaskType, get_peft_model
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, Dataset
-from transformers import CLIPModel, CLIPProcessor
+from transformers import SiglipModel, SiglipProcessor
 
 
 class CustomDataset(Dataset):
-    def __init__(self, records: list[dict[str, Any]], processor: CLIPProcessor, max_length: int) -> None:
+    def __init__(self, records: list[dict[str, Any]], processor: SiglipProcessor, max_length: int) -> None:
         self.records = records
         self.image_processor = processor.image_processor
         self.tokenizer = processor.tokenizer
@@ -41,12 +41,20 @@ class CustomDataset(Dataset):
             padding="max_length",
             truncation=True,
             max_length=self.max_length,
+            return_attention_mask=True,
         )
+
+        input_ids = text_inputs["input_ids"][0]
+        if "attention_mask" in text_inputs:
+            attention_mask = text_inputs["attention_mask"][0]
+        else:
+            pad_id = self.tokenizer.pad_token_id if self.tokenizer.pad_token_id is not None else 0
+            attention_mask = (input_ids != pad_id).long()
 
         return {
             "pixel_values": image_inputs["pixel_values"][0],
-            "input_ids": text_inputs["input_ids"][0],
-            "attention_mask": text_inputs["attention_mask"][0],
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
         }
 
 
@@ -95,9 +103,9 @@ def prepare_model_and_processor(
     lora_r: int,
     lora_alpha: int,
     lora_dropout: float,
-) -> tuple[CLIPModel, CLIPProcessor]:
-    processor = CLIPProcessor.from_pretrained(model_id)
-    base_model = CLIPModel.from_pretrained(model_id)
+) -> tuple[SiglipModel, SiglipProcessor]:
+    processor = SiglipProcessor.from_pretrained(model_id)
+    base_model = SiglipModel.from_pretrained(model_id)
     for param in base_model.parameters():
         param.requires_grad = False
 
@@ -114,9 +122,13 @@ def prepare_model_and_processor(
     return model, processor
 
 
-def clip_contrastive_loss(model: CLIPModel, outputs) -> torch.Tensor:
-    image_embeds = outputs.image_embeds
-    text_embeds = outputs.text_embeds
+def clip_contrastive_loss(
+    model: SiglipModel,
+    image_embeds: torch.Tensor,
+    text_embeds: torch.Tensor,
+) -> torch.Tensor:
+    image_embeds = image_embeds / image_embeds.norm(p=2, dim=-1, keepdim=True)
+    text_embeds = text_embeds / text_embeds.norm(p=2, dim=-1, keepdim=True)
     logit_scale = model.logit_scale.exp().clamp(max=100)
     logits_per_text = logit_scale * text_embeds @ image_embeds.t()
     logits_per_image = logits_per_text.t()
@@ -128,7 +140,7 @@ def clip_contrastive_loss(model: CLIPModel, outputs) -> torch.Tensor:
 
 @torch.no_grad()
 def evaluate(
-    model: CLIPModel,
+    model: SiglipModel,
     data_loader: DataLoader,
     device: torch.device,
     autocast_context,
@@ -139,8 +151,12 @@ def evaluate(
     for batch in data_loader:
         batch = {k: v.to(device, non_blocking=True) for k, v in batch.items()}
         with autocast_context:
-            outputs = model(**batch)
-            loss = clip_contrastive_loss(model, outputs)
+            image_embeds = model.get_image_features(pixel_values=batch["pixel_values"])
+            text_embeds = model.get_text_features(
+                input_ids=batch["input_ids"],
+                attention_mask=batch["attention_mask"],
+            )
+            loss = clip_contrastive_loss(model, image_embeds, text_embeds)
         total_loss += loss.item()
         steps += 1
     return total_loss / max(steps, 1)
@@ -148,8 +164,8 @@ def evaluate(
 
 @torch.no_grad()
 def run_similarity_test(
-    model: CLIPModel,
-    processor: CLIPProcessor,
+    model: SiglipModel,
+    processor: SiglipProcessor,
     sample: dict[str, Any],
     device: torch.device,
     autocast_context,
@@ -205,7 +221,11 @@ def parse_args() -> argparse.Namespace:
         help="Root directory for relative image paths.",
     )
     parser.add_argument("--output-dir", type=Path, default=Path("outputs/ko-clip-lora"))
-    parser.add_argument("--model-id", type=str, default="tech-leader/ko-clip-base-v1-vit-b-32")
+    parser.add_argument(
+        "--model-id",
+        type=str,
+        default="google/siglip-base-patch16-256-multilingual",
+    )
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument(
         "--batch-size",
@@ -302,8 +322,12 @@ def main() -> None:
         for step, batch in enumerate(train_loader, start=1):
             batch = {k: v.to(device, non_blocking=True) for k, v in batch.items()}
             with autocast_context:
-                outputs = model(**batch)
-                loss = clip_contrastive_loss(model, outputs)
+                image_embeds = model.get_image_features(pixel_values=batch["pixel_values"])
+                text_embeds = model.get_text_features(
+                    input_ids=batch["input_ids"],
+                    attention_mask=batch["attention_mask"],
+                )
+                loss = clip_contrastive_loss(model, image_embeds, text_embeds)
             total_loss += loss.item()
             loss = loss / args.grad_accum_steps
             loss.backward()
