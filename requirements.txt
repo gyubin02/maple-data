@@ -1,0 +1,9 @@
+httpx>=0.25
+python-dotenv>=1.0
+typer>=0.9
+pytest>=7.0
+accelerate>=0.27
+pillow>=10.0
+pyarrow>=14.0
+torch>=2.1
+transformers>=4.41

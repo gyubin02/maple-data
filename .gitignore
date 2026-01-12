@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.venv/
+venv/
+ENV/
+
+# Env files
+.env
+
+# Test/coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editor/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Data outputs
+/data/
+
+# Logs
+*.log
