@@ -32,5 +32,8 @@ htmlcov/
 *.bin
 *.safetensors
 
+# Local vector DB
+/chroma_db/
+
 # Logs
 *.log

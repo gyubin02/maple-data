@@ -21,8 +21,8 @@ def parse_args() -> argparse.Namespace:
         default=[
             "레인보우 스타",
             "블랙과 흰색의 별 모양 무기",
-            "하얀 모자",
-            "눈",
+            "핑크색 날개",
+            "파란색 모자",
             "관련 없는 이미지",
         ],
         help="List of text candidates (Korean recommended).",
