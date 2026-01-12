@@ -25,5 +25,12 @@ htmlcov/
 # Data outputs
 /data/
 
+# Training outputs / checkpoints
+/outputs/
+/checkpoints/
+*.pt
+*.bin
+*.safetensors
+
 # Logs
 *.log
