@@ -65,6 +65,11 @@ def run(
     parquet: bool = typer.Option(False, "--parquet", help="Write labels.parquet"),
     load_4bit: bool = typer.Option(False, "--load-4bit", help="Enable 4-bit quantization"),
     max_new_tokens: int = typer.Option(384, "--max-new-tokens", help="Max new tokens"),
+    quality_retry: bool = typer.Option(
+        False,
+        "--quality-retry/--no-quality-retry",
+        help="Retry once with a stricter prompt when output is low quality",
+    ),
     run_id: Optional[str] = typer.Option(
         None,
         "--run-id",
@@ -119,6 +124,7 @@ def run(
         load_4bit=load_4bit,
         max_new_tokens=max_new_tokens,
         run_id=run_id,
+        quality_retry=quality_retry,
     )
 
     run_labeling(config)

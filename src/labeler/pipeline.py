@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional
@@ -9,7 +10,14 @@ from typing import Iterable, Optional
 from .adapters import LabelInput, iter_inputs
 from .image_utils import load_image
 from .model import LabelerModel, ModelConfig
-from .prompts import PROMPT_VERSION, PromptInputs, build_messages, build_user_prompt
+from .prompts import (
+    PROMPT_VERSION,
+    PromptInputs,
+    build_messages,
+    build_quality_messages,
+    build_quality_prompt,
+    build_user_prompt,
+)
 from pipeline.utils import ensure_dir, utc_now_iso
 
 logger = logging.getLogger("labeler")
@@ -37,6 +45,7 @@ class LabelingConfig:
     load_4bit: bool
     max_new_tokens: int
     run_id: Optional[str]
+    quality_retry: bool
 
 
 def run_labeling(config: LabelingConfig) -> None:
@@ -201,6 +210,18 @@ def _parse_and_build(
     except ValueError as exc:
         _log_error(err_handle, sample.image_path, str(exc))
         return None
+
+    if config.quality_retry and include_image and _needs_quality_retry(record, sample):
+        refined = _retry_quality(sample, model, config, include_image, include_metadata)
+        if refined is None:
+            _append_quality_reason(record, "quality_retry_failed")
+            return record
+        try:
+            record = _normalize_record(refined, sample, config)
+        except ValueError as exc:
+            _log_error(err_handle, sample.image_path, str(exc))
+            _append_quality_reason(record, "quality_retry_invalid")
+            return record
     return record
 
 
@@ -222,6 +243,36 @@ def _retry_strict(
     )
     user_prompt = build_user_prompt(prompt_inputs)
     messages = [build_messages(user_prompt, include_image, strict=True)]
+    images = None
+    if include_image:
+        try:
+            images = [load_image(sample.image_abspath, config.upscale, config.alpha_bg)]
+        except Exception:
+            return None
+    output = model.generate_texts(messages, images)
+    if not output:
+        return None
+    return _try_parse(output[0])
+
+
+def _retry_quality(
+    sample: LabelInput,
+    model: LabelerModel,
+    config: LabelingConfig,
+    include_image: bool,
+    include_metadata: bool,
+) -> Optional[dict[str, object]]:
+    prompt_inputs = PromptInputs(
+        item_name=sample.item_name,
+        item_description=sample.item_description,
+        item_part=sample.item_part,
+        source_type=sample.source_type,
+        include_image=include_image,
+        include_metadata=include_metadata,
+        lang=config.lang,
+    )
+    user_prompt = build_quality_prompt(prompt_inputs)
+    messages = [build_quality_messages(user_prompt, include_image)]
     images = None
     if include_image:
         try:
@@ -289,6 +340,12 @@ def _normalize_record(
     if len(queries) < 3:
         is_uncertain = True
         reasons.append("few_queries")
+    if _label_matches_item_name(label_ko, sample.item_name):
+        is_uncertain = True
+        reasons.append("label_equals_item_name")
+    if _attributes_empty(normalized_attributes):
+        is_uncertain = True
+        reasons.append("attributes_missing")
 
     reasons = _unique_list(reasons)
 
@@ -329,6 +386,42 @@ def _clean_text(value: object) -> Optional[str]:
     return text or None
 
 
+def _needs_quality_retry(record: dict[str, object], sample: LabelInput) -> bool:
+    label = record.get("label_ko") or ""
+    if _label_matches_item_name(str(label), sample.item_name):
+        return True
+    if _attributes_empty(record.get("attributes")):
+        return True
+    tags = record.get("tags_ko")
+    queries = record.get("query_variants_ko")
+    if not isinstance(tags, list) or len(tags) < 5:
+        return True
+    if not isinstance(queries, list) or len(queries) < 3:
+        return True
+    return False
+
+
+def _attributes_empty(attributes: object) -> bool:
+    if not isinstance(attributes, dict):
+        return True
+    for key in ("colors", "theme", "material", "vibe"):
+        values = attributes.get(key)
+        if isinstance(values, list) and values:
+            return False
+    item_type = attributes.get("item_type_guess")
+    if isinstance(item_type, str) and item_type.strip():
+        return False
+    return True
+
+
+def _label_matches_item_name(label: str, item_name: str) -> bool:
+    return _normalize_text_key(label) == _normalize_text_key(item_name)
+
+
+def _normalize_text_key(value: str) -> str:
+    return re.sub(r"[\W_]+", "", value).lower()
+
+
 def _unique_list(values: Iterable[str]) -> list[str]:
     seen = set()
     result = []
@@ -338,6 +431,20 @@ def _unique_list(values: Iterable[str]) -> list[str]:
         seen.add(value)
         result.append(value)
     return result
+
+
+def _append_quality_reason(record: dict[str, object], reason: str) -> None:
+    quality = record.get("quality_flags")
+    if not isinstance(quality, dict):
+        quality = {}
+    reasons = quality.get("reasons")
+    if not isinstance(reasons, list):
+        reasons = []
+    cleaned = [str(item).strip() for item in reasons if str(item).strip()]
+    reasons = _unique_list([*cleaned, reason])
+    quality["reasons"] = reasons
+    quality["is_uncertain"] = True
+    record["quality_flags"] = quality
 
 
 def _log_error(handle, image_path: str, message: str) -> None:

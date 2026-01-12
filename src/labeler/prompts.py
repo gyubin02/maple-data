@@ -3,16 +3,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-PROMPT_VERSION = "v1"
+PROMPT_VERSION = "v2"
 
 SYSTEM_PROMPT_BASE = (
     "You are generating labels for MapleStory item icons for CLIP training. "
     "Return a single JSON object only. Do not output markdown or extra text. "
-    "Use item_name as the primary identifier; keep it intact. "
-    "Use metadata if provided and avoid guessing. "
-    "If uncertain, set quality_flags.is_uncertain=true and add reasons. "
-    "label_ko must be one short Korean sentence with key visual keywords. "
-    "tags_ko must be 5-15 short Korean keywords. "
+    "Include item_name verbatim in label_ko, but do not make label_ko identical to item_name. "
+    "Use image evidence first; use metadata only when it is visible. Avoid guessing. "
+    "If uncertain, set quality_flags.is_uncertain=true and add reasons (e.g. low_visual_signal). "
+    "label_ko must be one short Korean sentence with at least two visual descriptors "
+    "(color/material/shape/theme/vibe) plus the item name. "
+    "tags_ko must be 5-15 short Korean keywords with at least two visual descriptors "
+    "and should not be only item_name tokens. "
     "query_variants_ko must be 3-8 natural Korean search queries. "
     "attributes must include colors/theme/material/vibe lists and item_type_guess string or null. "
     "If label_en is not requested, set it to null."
@@ -20,6 +22,17 @@ SYSTEM_PROMPT_BASE = (
 
 SYSTEM_PROMPT_STRICT = (
     SYSTEM_PROMPT_BASE
+    + " Output must be valid JSON with double quotes and no trailing commas."
+)
+
+SYSTEM_PROMPT_QUALITY = (
+    SYSTEM_PROMPT_BASE
+    + " Repair low-quality outputs by increasing visual specificity without guessing. "
+    "Ensure attributes lists are populated when visible; otherwise set low_visual_signal."
+)
+
+SYSTEM_PROMPT_QUALITY_STRICT = (
+    SYSTEM_PROMPT_QUALITY
     + " Output must be valid JSON with double quotes and no trailing commas."
 )
 
@@ -76,5 +89,32 @@ def build_messages(user_prompt: str, include_image: bool, strict: bool) -> list[
         content = [{"type": "text", "text": user_prompt}]
     return [
         {"role": "system", "content": system_prompt},
+        {"role": "user", "content": content},
+    ]
+
+
+def build_quality_prompt(inputs: PromptInputs) -> str:
+    base_prompt = build_user_prompt(inputs)
+    quality_lines = [
+        "quality_mode: improve visual specificity",
+        (
+            "requirements: label_ko includes item_name + >=2 visual descriptors; "
+            "tags_ko include >=2 visual descriptors; fill attributes when visible; "
+            "if not, set quality_flags.is_uncertain=true with reason low_visual_signal."
+        ),
+    ]
+    return base_prompt + "\n" + "\n".join(quality_lines)
+
+
+def build_quality_messages(user_prompt: str, include_image: bool) -> list[dict[str, object]]:
+    if include_image:
+        content: list[dict[str, object]] = [
+            {"type": "image"},
+            {"type": "text", "text": user_prompt},
+        ]
+    else:
+        content = [{"type": "text", "text": user_prompt}]
+    return [
+        {"role": "system", "content": SYSTEM_PROMPT_QUALITY_STRICT},
         {"role": "user", "content": content},
     ]
