@@ -21,13 +21,22 @@ def parse_args() -> argparse.Namespace:
         default=[
             "레인보우 스타",
             "블랙과 흰색의 별 모양 무기",
-            "핑크색 날개",
+            "흰색 티셔츠",
             "파란색 모자",
             "관련 없는 이미지",
         ],
         help="List of text candidates (Korean recommended).",
     )
     return parser.parse_args()
+
+
+def resolve_adapter_path(adapter_path: Path) -> Path:
+    if (adapter_path / "adapter_config.json").exists():
+        return adapter_path
+    candidate = adapter_path / "best_model"
+    if (candidate / "adapter_config.json").exists():
+        return candidate
+    return adapter_path
 
 
 def main() -> None:
@@ -38,7 +47,8 @@ def main() -> None:
 
     print("Loading model...")
     base_model = SiglipModel.from_pretrained(args.model_id)
-    model = PeftModel.from_pretrained(base_model, args.adapter_path)
+    adapter_path = resolve_adapter_path(Path(args.adapter_path))
+    model = PeftModel.from_pretrained(base_model, str(adapter_path))
     processor = SiglipProcessor.from_pretrained(args.model_id)
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -59,13 +69,12 @@ def main() -> None:
         image_embeds = image_embeds / image_embeds.norm(dim=-1, keepdim=True)
         text_embeds = text_embeds / text_embeds.norm(dim=-1, keepdim=True)
 
-        logits = image_embeds @ text_embeds.t()
-        logit_scale = model.logit_scale.exp()
-        logits = logits * logit_scale
-        probs = logits.softmax(dim=1)
+        similarities = image_embeds @ text_embeds.t()
 
-    for text, prob in zip(args.candidates, probs[0]):
-        print(f"{text}: {prob.item() * 100:.2f}%")
+    for text, similarity in zip(args.candidates, similarities[0]):
+        sim_value = similarity.item()
+        distance = 1.0 - sim_value
+        print(f"{text} Similarity: {sim_value:.4f} | Distance: {distance:.4f}")
 
 
 if __name__ == "__main__":

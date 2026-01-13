@@ -133,7 +133,10 @@ def main() -> None:
     model.eval()
 
     client = chromadb.PersistentClient(path=str(args.chroma_path))
-    collection = client.get_or_create_collection(name=args.collection)
+    collection = client.get_or_create_collection(
+        name=args.collection,
+        metadata={"hnsw:space": "cosine"},
+    )
 
     total_images = len(image_paths)
     progress = tqdm(total=total_images, desc="Indexing images", unit="img")

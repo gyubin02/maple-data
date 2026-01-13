@@ -49,7 +49,10 @@ async def lifespan(app: FastAPI):
     model.eval()
 
     client = chromadb.PersistentClient(path="chroma_db")
-    collection = client.get_or_create_collection(name="maple_items")
+    collection = client.get_or_create_collection(
+        name="maple_items",
+        metadata={"hnsw:space": "cosine"},
+    )
 
     app.state.device = device
     app.state.model = model
@@ -97,7 +100,7 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
     results = collection.query(
         query_embeddings=[query_embedding],
         n_results=payload.k,
-        include=["distances", "metadatas", "ids"],
+        include=["distances", "metadatas"],
     )
 
     ids: List[str] = results.get("ids", [[]])[0]
@@ -110,11 +113,13 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
         if metadata:
             filepath = metadata.get("filepath", "")
         image_url = f"/static/images/{filepath}" if filepath else ""
+        similarity = max(0.0, 1.0 - distance) if distance is not None else 0.0
         response_items.append(
             {
                 "id": item_id,
                 "filepath": filepath,
                 "distance": distance,
+                "similarity": similarity,
                 "image_url": image_url,
             }
         )
