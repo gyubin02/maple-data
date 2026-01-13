@@ -144,7 +144,7 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
                 query_embeddings=[query_embedding],
                 n_results=payload.k,
                 where=where_filter,
-                include=["distances", "metadatas", "ids"],
+                include=["distances", "metadatas"],
             )
         except Exception as exc:  # noqa: BLE001
             print(f"Filtered query failed ({exc}); falling back to vector-only.")
@@ -154,7 +154,7 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
         results = collection.query(
             query_embeddings=[query_embedding],
             n_results=payload.k,
-            include=["distances", "metadatas", "ids"],
+            include=["distances", "metadatas"],
         )
 
     ids: List[str] = results.get("ids", [[]])[0]
