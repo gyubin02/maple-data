@@ -112,6 +112,11 @@ else:
     print(f"Warning: static images directory not found: {DATA_DIR}")
 
 
+@app.get("/")
+def health() -> Dict[str, str]:
+    return {"status": "ok"}
+
+
 @app.post("/search")
 def search(payload: SearchRequest) -> Dict[str, Any]:
     query = payload.query.strip()
