@@ -100,7 +100,7 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
     results = collection.query(
         query_embeddings=[query_embedding],
         n_results=payload.k,
-        include=["distances", "metadatas"],
+        include=["distances", "metadatas", "ids"],
     )
 
     ids: List[str] = results.get("ids", [[]])[0]
@@ -110,8 +110,14 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
     response_items = []
     for item_id, distance, metadata in zip(ids, distances, metadatas):
         filepath = ""
+        item_name = ""
+        label_ko = ""
         if metadata:
             filepath = metadata.get("filepath", "")
+            item_name = metadata.get("item_name", "") or ""
+            label_ko = metadata.get("label_ko", "") or ""
+        if not item_name and filepath:
+            item_name = Path(filepath).stem
         image_url = f"/static/images/{filepath}" if filepath else ""
         similarity = max(0.0, 1.0 - distance) if distance is not None else 0.0
         response_items.append(
@@ -121,6 +127,9 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
                 "distance": distance,
                 "similarity": similarity,
                 "image_url": image_url,
+                "item_name": item_name,
+                "label_ko": label_ko,
+                "label": label_ko,
             }
         )
 

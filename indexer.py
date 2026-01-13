@@ -2,8 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
-from typing import Iterable, List, Tuple, TypeVar
+from typing import Dict, Iterable, List, Optional, Tuple, TypeVar
 
 import chromadb
 import torch
@@ -54,6 +55,12 @@ def parse_args() -> argparse.Namespace:
         "--collection",
         default="maple_items",
         help="ChromaDB collection name.",
+    )
+    parser.add_argument(
+        "--labels-path",
+        type=Path,
+        default=None,
+        help="Path to labels.jsonl (defaults to data-dir/labels/labels.jsonl).",
     )
     return parser.parse_args()
 
@@ -111,6 +118,52 @@ def load_images(
     return images, valid_paths, valid_ids
 
 
+def normalize_label(value: Optional[str]) -> Optional[str]:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        trimmed = value.strip()
+        return trimmed or None
+    return str(value)
+
+
+def load_labels(labels_path: Path) -> Dict[str, Dict[str, str]]:
+    if not labels_path.exists():
+        print(f"Labels file not found, continuing without labels: {labels_path}")
+        return {}
+
+    label_map: Dict[str, Dict[str, str]] = {}
+    with labels_path.open("r", encoding="utf-8") as file:
+        for line_no, line in enumerate(file, start=1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError as exc:
+                print(f"Skipping label line {line_no}: {exc}")
+                continue
+
+            image_path = record.get("image_path")
+            if not image_path:
+                continue
+
+            item_name = normalize_label(record.get("item_name"))
+            label_ko = normalize_label(record.get("label_ko"))
+            if not item_name and not label_ko:
+                continue
+
+            normalized_path = Path(str(image_path)).as_posix().lstrip("./")
+            label_map[normalized_path] = {}
+            if item_name:
+                label_map[normalized_path]["item_name"] = item_name
+            if label_ko:
+                label_map[normalized_path]["label_ko"] = label_ko
+
+    print(f"Loaded labels for {len(label_map)} images from {labels_path}")
+    return label_map
+
+
 def main() -> None:
     args = parse_args()
 
@@ -121,6 +174,8 @@ def main() -> None:
 
     ids = build_ids(image_paths)
     adapter_path = resolve_adapter_path(args.adapter_path)
+    labels_path = args.labels_path or args.data_dir / "labels/labels.jsonl"
+    label_map = load_labels(labels_path)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -159,10 +214,14 @@ def main() -> None:
             embeds = F.normalize(embeds, dim=-1)
 
             embeddings = embeds.detach().cpu().tolist()
-            metadatas = [
-                {"filepath": str(path.relative_to(args.data_dir).as_posix())}
-                for path in valid_paths
-            ]
+            metadatas = []
+            for path in valid_paths:
+                rel_path = path.relative_to(args.data_dir).as_posix()
+                metadata = {"filepath": rel_path}
+                label_data = label_map.get(rel_path)
+                if label_data:
+                    metadata.update(label_data)
+                metadatas.append(metadata)
 
             collection.upsert(
                 ids=valid_ids,
