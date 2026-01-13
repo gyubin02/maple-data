@@ -42,7 +42,7 @@ class TransportError(RuntimeError):
 class ApiClient:
     api_key: str
     concurrency: int = 8
-    rps: float = 5.0
+    rps: float = 500.0
     timeout_seconds: float = 30.0
     max_attempts: int = 5
 

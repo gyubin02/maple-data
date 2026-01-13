@@ -30,7 +30,7 @@ def run(
         help="Download icon assets locally.",
     ),
     concurrency: int = typer.Option(8, "--concurrency", help="Max concurrent requests."),
-    rps: float = typer.Option(5.0, "--rps", help="Requests per second throttle."),
+    rps: float = typer.Option(500.0, "--rps", help="Requests per second throttle."),
     output_dir: Optional[Path] = typer.Option(
         None,
         "--output-dir",
