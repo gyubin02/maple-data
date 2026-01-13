@@ -17,6 +17,25 @@ from transformers import SiglipModel, SiglipProcessor
 
 
 DATA_DIR = (Path(__file__).resolve().parent / "data/2026-01-11").resolve()
+CATEGORY_KEYWORDS = [
+    "모자",
+    "신발",
+    "장갑",
+    "무기",
+    "상의",
+    "하의",
+    "망토",
+    "케이프",
+    "귀걸이",
+    "귀고리",
+    "반지",
+    "목걸이",
+    "벨트",
+    "얼굴장식",
+    "눈장식",
+    "보조무기",
+    "방패",
+]
 
 
 class SearchRequest(BaseModel):
@@ -31,6 +50,24 @@ def resolve_adapter_path(adapter_path: Path) -> Path:
     if (candidate / "adapter_config.json").exists():
         return candidate
     return adapter_path
+
+
+def extract_category_keywords(query: str) -> List[str]:
+    keywords: List[str] = []
+    for keyword in CATEGORY_KEYWORDS:
+        if keyword in query and keyword not in keywords:
+            keywords.append(keyword)
+    return keywords
+
+
+def build_metadata_filter(keywords: List[str]) -> Dict[str, Any] | None:
+    if not keywords:
+        return None
+    conditions = []
+    for keyword in keywords:
+        for field in ("label", "label_ko", "item_name"):
+            conditions.append({field: {"$contains": keyword}})
+    return {"$or": conditions}
 
 
 @asynccontextmanager
@@ -97,11 +134,28 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
 
     query_embedding = text_embeds[0].detach().cpu().tolist()
 
-    results = collection.query(
-        query_embeddings=[query_embedding],
-        n_results=payload.k,
-        include=["distances", "metadatas"],
-    )
+    filter_keywords = extract_category_keywords(query)
+    where_filter = build_metadata_filter(filter_keywords)
+
+    results = None
+    if where_filter:
+        try:
+            results = collection.query(
+                query_embeddings=[query_embedding],
+                n_results=payload.k,
+                where=where_filter,
+                include=["distances", "metadatas", "ids"],
+            )
+        except Exception as exc:  # noqa: BLE001
+            print(f"Filtered query failed ({exc}); falling back to vector-only.")
+            results = None
+
+    if not results or not results.get("ids") or not results["ids"][0]:
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=payload.k,
+            include=["distances", "metadatas", "ids"],
+        )
 
     ids: List[str] = results.get("ids", [[]])[0]
     distances: List[float] = results.get("distances", [[]])[0]
@@ -115,7 +169,7 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
         if metadata:
             filepath = metadata.get("filepath", "")
             item_name = metadata.get("item_name", "") or ""
-            label_ko = metadata.get("label_ko", "") or ""
+            label_ko = metadata.get("label_ko") or metadata.get("label") or ""
         if not item_name and filepath:
             item_name = Path(filepath).stem
         image_url = f"/static/images/{filepath}" if filepath else ""

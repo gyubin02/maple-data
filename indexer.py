@@ -159,6 +159,7 @@ def load_labels(labels_path: Path) -> Dict[str, Dict[str, str]]:
                 label_map[normalized_path]["item_name"] = item_name
             if label_ko:
                 label_map[normalized_path]["label_ko"] = label_ko
+                label_map[normalized_path]["label"] = label_ko
 
     print(f"Loaded labels for {len(label_map)} images from {labels_path}")
     return label_map
