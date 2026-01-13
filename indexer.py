@@ -16,6 +16,23 @@ from transformers import SiglipModel, SiglipProcessor
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif"}
 T = TypeVar("T")
+CATEGORY_SYNONYMS = {
+    "모자": ["모자", "헬름", "헬멧", "햇", "보닛", "캡"],
+    "신발": ["신발", "슈즈", "부츠", "샌들"],
+    "장갑": ["장갑", "글러브"],
+    "무기": ["무기", "검", "소드", "대검", "스태프", "완드", "활", "석궁", "창", "스피어", "폴암", "도끼", "단검", "너클", "건", "총", "클로"],
+    "상의": ["상의", "셔츠", "자켓", "코트", "로브", "블라우스"],
+    "하의": ["하의", "바지", "팬츠", "스커트"],
+    "망토": ["망토", "케이프", "cape"],
+    "귀걸이": ["귀걸이", "귀고리", "이어링"],
+    "반지": ["반지", "링"],
+    "목걸이": ["목걸이", "펜던트", "네클리스"],
+    "벨트": ["벨트"],
+    "얼굴장식": ["얼굴장식", "얼굴 장식"],
+    "눈장식": ["눈장식", "눈 장식"],
+    "보조무기": ["보조무기", "보조 무기"],
+    "방패": ["방패", "쉴드", "실드"],
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -127,6 +144,16 @@ def normalize_label(value: Optional[str]) -> Optional[str]:
     return str(value)
 
 
+def detect_category(texts: List[str]) -> Optional[str]:
+    lowered_texts = [text.lower() for text in texts if text]
+    for category, keywords in CATEGORY_SYNONYMS.items():
+        for keyword in keywords:
+            keyword_lower = keyword.lower()
+            if any(keyword_lower in text for text in lowered_texts):
+                return category
+    return None
+
+
 def load_labels(labels_path: Path) -> Dict[str, Dict[str, str]]:
     if not labels_path.exists():
         print(f"Labels file not found, continuing without labels: {labels_path}")
@@ -150,7 +177,10 @@ def load_labels(labels_path: Path) -> Dict[str, Dict[str, str]]:
 
             item_name = normalize_label(record.get("item_name"))
             label_ko = normalize_label(record.get("label_ko"))
-            if not item_name and not label_ko:
+            tags = record.get("tags_ko") or []
+            tag_texts = [normalize_label(tag) for tag in tags if tag is not None]
+            tag_texts = [tag for tag in tag_texts if tag]
+            if not item_name and not label_ko and not tag_texts:
                 continue
 
             normalized_path = Path(str(image_path)).as_posix().lstrip("./")
@@ -160,6 +190,9 @@ def load_labels(labels_path: Path) -> Dict[str, Dict[str, str]]:
             if label_ko:
                 label_map[normalized_path]["label_ko"] = label_ko
                 label_map[normalized_path]["label"] = label_ko
+            category = detect_category([item_name or "", label_ko or "", *tag_texts])
+            if category:
+                label_map[normalized_path]["category"] = category
 
     print(f"Loaded labels for {len(label_map)} images from {labels_path}")
     return label_map

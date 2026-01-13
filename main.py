@@ -17,25 +17,23 @@ from transformers import SiglipModel, SiglipProcessor
 
 
 DATA_DIR = (Path(__file__).resolve().parent / "data/2026-01-11").resolve()
-CATEGORY_KEYWORDS = [
-    "모자",
-    "신발",
-    "장갑",
-    "무기",
-    "상의",
-    "하의",
-    "망토",
-    "케이프",
-    "귀걸이",
-    "귀고리",
-    "반지",
-    "목걸이",
-    "벨트",
-    "얼굴장식",
-    "눈장식",
-    "보조무기",
-    "방패",
-]
+CATEGORY_SYNONYMS = {
+    "모자": ["모자", "헬름", "헬멧", "햇", "보닛", "캡"],
+    "신발": ["신발", "슈즈", "부츠", "샌들"],
+    "장갑": ["장갑", "글러브"],
+    "무기": ["무기", "검", "소드", "대검", "스태프", "완드", "활", "석궁", "창", "스피어", "폴암", "도끼", "단검", "너클", "건", "총", "클로"],
+    "상의": ["상의", "셔츠", "자켓", "코트", "로브", "블라우스"],
+    "하의": ["하의", "바지", "팬츠", "스커트"],
+    "망토": ["망토", "케이프", "cape"],
+    "귀걸이": ["귀걸이", "귀고리", "이어링"],
+    "반지": ["반지", "링"],
+    "목걸이": ["목걸이", "펜던트", "네클리스"],
+    "벨트": ["벨트"],
+    "얼굴장식": ["얼굴장식", "얼굴 장식"],
+    "눈장식": ["눈장식", "눈 장식"],
+    "보조무기": ["보조무기", "보조 무기"],
+    "방패": ["방패", "쉴드", "실드"],
+}
 
 
 class SearchRequest(BaseModel):
@@ -54,20 +52,19 @@ def resolve_adapter_path(adapter_path: Path) -> Path:
 
 def extract_category_keywords(query: str) -> List[str]:
     keywords: List[str] = []
-    for keyword in CATEGORY_KEYWORDS:
-        if keyword in query and keyword not in keywords:
-            keywords.append(keyword)
+    lowered_query = query.lower()
+    for category, variants in CATEGORY_SYNONYMS.items():
+        for variant in variants:
+            if variant.lower() in lowered_query and category not in keywords:
+                keywords.append(category)
+                break
     return keywords
 
 
 def build_metadata_filter(keywords: List[str]) -> Dict[str, Any] | None:
     if not keywords:
         return None
-    conditions = []
-    for keyword in keywords:
-        for field in ("label", "label_ko", "item_name"):
-            conditions.append({field: {"$contains": keyword}})
-    return {"$or": conditions}
+    return {"category": {"$in": keywords}}
 
 
 @asynccontextmanager
