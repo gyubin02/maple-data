@@ -100,7 +100,7 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
     results = collection.query(
         query_embeddings=[query_embedding],
         n_results=payload.k,
-        include=["distances", "metadatas", "ids"],
+        include=["distances", "metadatas"],
     )
 
     ids: List[str] = results.get("ids", [[]])[0]
