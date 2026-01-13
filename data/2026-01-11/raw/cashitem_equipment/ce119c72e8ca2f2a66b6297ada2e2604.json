@@ -1,0 +1,712 @@
+{
+  "date": "2026-01-11T00:00+09:00",
+  "character_gender": "여",
+  "character_class": "윈드브레이커",
+  "character_look_mode": "0",
+  "preset_no": 3,
+  "cash_item_equipment_base": [
+    {
+      "cash_item_equipment_part": "모자",
+      "cash_item_equipment_slot": "모자",
+      "cash_item_name": "머랭 쿠키",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPCNAPE",
+      "cash_item_description": null,
+      "cash_item_option": [
+        {
+          "option_type": "DEX",
+          "option_value": "16"
+        },
+        {
+          "option_type": "INT",
+          "option_value": "17"
+        }
+      ],
+      "date_expire": null,
+      "date_option_expire": "2026-01-13T16:00+09:00",
+      "cash_item_label": "블랙라벨",
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "얼굴장식",
+      "cash_item_equipment_slot": "얼굴장식",
+      "cash_item_name": "냄새가 났어!!",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPDJBNF",
+      "cash_item_description": "코 끝이 쫑긋쫑긋 했어!!",
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "눈장식",
+      "cash_item_equipment_slot": "눈장식",
+      "cash_item_name": "투명 안경",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPAJHJI",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "귀고리",
+      "cash_item_equipment_slot": "귀고리",
+      "cash_item_name": "투명 귀고리",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPBJHMF",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "한벌옷",
+      "cash_item_equipment_slot": "상의",
+      "cash_item_name": "레이디 쿠키 케이프",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPHKPJFNJCAMKACAP",
+      "cash_item_description": null,
+      "cash_item_option": [
+        {
+          "option_type": "방어력",
+          "option_value": "141"
+        }
+      ],
+      "date_expire": null,
+      "date_option_expire": "2026-03-17T20:00+09:00",
+      "cash_item_label": "블랙라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "빨간색 계열",
+        "hue": 134,
+        "saturation": 30,
+        "value": -11
+      },
+      "cash_item_effect_prism": {
+        "color_range": "빨간색 계열",
+        "hue": 134,
+        "saturation": 30,
+        "value": -11
+      },
+      "item_gender": "여",
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "신발",
+      "cash_item_equipment_slot": "신발",
+      "cash_item_name": "별하늘 꽃술",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPFIGIC",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "장갑",
+      "cash_item_equipment_slot": "장갑",
+      "cash_item_name": "투명 장갑",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPKJGOD",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "망토",
+      "cash_item_equipment_slot": "망토",
+      "cash_item_name": "러블리 익스플로러",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEOCIANHNKCFNLFKNL",
+      "cash_item_description": null,
+      "cash_item_option": [
+        {
+          "option_type": "STR",
+          "option_value": "18"
+        },
+        {
+          "option_type": "DEX",
+          "option_value": "17"
+        }
+      ],
+      "date_expire": null,
+      "date_option_expire": "2026-05-23T02:00+09:00",
+      "cash_item_label": "블랙라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 242,
+        "saturation": 99,
+        "value": 99
+      },
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "무기",
+      "cash_item_equipment_slot": "무기",
+      "cash_item_name": "카오스 크레센트",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEICIAMANKBDBMEFKH",
+      "cash_item_description": "모든 무기에 착용이 가능한 무기이다. 착용 시 특별한 카오스 이펙트가 출력된다.",
+      "cash_item_option": [
+        {
+          "option_type": "공격력",
+          "option_value": "30"
+        },
+        {
+          "option_type": "마력",
+          "option_value": "30"
+        }
+      ],
+      "date_expire": null,
+      "date_option_expire": "2026-02-20T16:00+09:00",
+      "cash_item_label": "마스터라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 359,
+        "saturation": 34,
+        "value": -99
+      },
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "반지",
+      "cash_item_equipment_slot": "반지3",
+      "cash_item_name": "혈맹의 반지",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEODPHOE",
+      "cash_item_description": "혈맹의 수호로 반지 착용자는 사냥 시 10%의 혈맹 보너스 경험치를 획득할 수 있다. 혈맹의 반지 착용자가 파티에 늘어날수록 한 명 당 5%씩의 혈맹 보너스 경험치를 추가로 받을 수 있다. 혈맹의 반지는 1개만 착용할 수 있고 파티원이 동일한 맵 내에 위치해야 효과를 받을 수 있다.     본인 착용시 10% 보너스 경험치   1인 추가 착용 시 15% 보너스 경험치   2인 추가 착용 시 20% 보너스 경험치   3인 추가 착용 시 25% 보너스 경험치   4인 추가 착용 시 30% 보너스 경험치",
+      "cash_item_option": [],
+      "date_expire": "2026-01-15T00:00+09:00",
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "반지",
+      "cash_item_equipment_slot": "반지4",
+      "cash_item_name": "경험치 부스트 링(15%)",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEODPENB",
+      "cash_item_description": "장착 후 사냥 시 경험치 부스트 링의 효과를 받아 15% 추가 경험치를 획득한다. 단, 부스트 링 종류의 반지는 중복하여 장착할 수 없습니다.",
+      "cash_item_option": [],
+      "date_expire": "2026-01-15T00:00+09:00",
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    }
+  ],
+  "cash_item_equipment_preset_1": [
+    {
+      "cash_item_equipment_part": "모자",
+      "cash_item_equipment_slot": "모자",
+      "cash_item_name": "모던시티 리본",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPCKGGJ",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": "여",
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "한벌옷",
+      "cash_item_equipment_slot": "상의",
+      "cash_item_name": "별의 기록자",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPHKCHCNKDAEKFANJ",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "스페셜라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 0,
+        "saturation": -99,
+        "value": -99
+      },
+      "cash_item_effect_prism": null,
+      "item_gender": "여",
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "신발",
+      "cash_item_equipment_slot": "신발",
+      "cash_item_name": "매니저 리본구두",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPFPGOH",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "장갑",
+      "cash_item_equipment_slot": "장갑",
+      "cash_item_name": "[BTS] 홀리 미스틱",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPKJALA",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "망토",
+      "cash_item_equipment_slot": "망토",
+      "cash_item_name": "햇살 여우 꼬리",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEOCIFLBNILCAOAFJK",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "블랙라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 213,
+        "saturation": 99,
+        "value": 46
+      },
+      "cash_item_effect_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 213,
+        "saturation": 99,
+        "value": 46
+      },
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "무기",
+      "cash_item_equipment_slot": "무기",
+      "cash_item_name": "조디악 스태프",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEICIAKBNIFIACDGIP",
+      "cash_item_description": "모든 무기에 착용이 가능하다.",
+      "cash_item_option": [
+        {
+          "option_type": "마력",
+          "option_value": "23"
+        }
+      ],
+      "date_expire": null,
+      "date_option_expire": "2026-02-03T20:00+09:00",
+      "cash_item_label": "블랙라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 0,
+        "saturation": 99,
+        "value": -99
+      },
+      "cash_item_effect_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 0,
+        "saturation": 99,
+        "value": -99
+      },
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "반지",
+      "cash_item_equipment_slot": "반지3",
+      "cash_item_name": "최초의 대적자 명찰 반지",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEODOALE",
+      "cash_item_description": "캐릭터 이름이 최초의 대적자 명찰에 나타난다.",
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "반지",
+      "cash_item_equipment_slot": "반지4",
+      "cash_item_name": "최초의 대적자 말풍선 반지",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEODOBLD",
+      "cash_item_description": "캐릭터가 대화를 할 때, 최초의 대적자 말풍선이 나타난다.",
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    }
+  ],
+  "cash_item_equipment_preset_2": [
+    {
+      "cash_item_equipment_part": "모자",
+      "cash_item_equipment_slot": "모자",
+      "cash_item_name": "코튼 라벤더",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPCOEPINKCEBCFBKG",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "레드라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 222,
+        "saturation": 22,
+        "value": 4
+      },
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "신발",
+      "cash_item_equipment_slot": "신발",
+      "cash_item_name": "매니저 리본구두",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPFPGOH",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "장갑",
+      "cash_item_equipment_slot": "장갑",
+      "cash_item_name": "꽃별",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPKJBHA",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "망토",
+      "cash_item_equipment_slot": "망토",
+      "cash_item_name": "포실 반디",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEOCIPJBNKCINIAGJM",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "스페셜라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 288,
+        "saturation": 99,
+        "value": 0
+      },
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "무기",
+      "cash_item_equipment_slot": "무기",
+      "cash_item_name": "드리밍 스타",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEICICIBNKCJDKELKO",
+      "cash_item_description": "모든 무기에 착용이 가능하다.",
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "레드라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 300,
+        "saturation": 60,
+        "value": 60
+      },
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    }
+  ],
+  "cash_item_equipment_preset_3": [
+    {
+      "cash_item_equipment_part": "모자",
+      "cash_item_equipment_slot": "모자",
+      "cash_item_name": "스피릿 노트",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPCNPOANKBDBMHEPI",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "스페셜라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 359,
+        "saturation": 37,
+        "value": 80
+      },
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "눈장식",
+      "cash_item_equipment_slot": "눈장식",
+      "cash_item_name": "러블리 아이섀도",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPAJEJG",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "한벌옷",
+      "cash_item_equipment_slot": "상의",
+      "cash_item_name": "트윙클 파핑",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPHKAMFNIEFHMHAKL",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "레드라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 105,
+        "saturation": 77,
+        "value": 77
+      },
+      "cash_item_effect_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 105,
+        "saturation": 77,
+        "value": 77
+      },
+      "item_gender": "여",
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "신발",
+      "cash_item_equipment_slot": "신발",
+      "cash_item_name": "루스카 부츠",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEPFPHGB",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "망토",
+      "cash_item_equipment_slot": "망토",
+      "cash_item_name": "루미캣 백팩",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEOCIOKANIEBCCNCBH",
+      "cash_item_description": null,
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "스페셜라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 49,
+        "saturation": 61,
+        "value": 63
+      },
+      "cash_item_effect_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 49,
+        "saturation": 61,
+        "value": 63
+      },
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "무기",
+      "cash_item_equipment_slot": "무기",
+      "cash_item_name": "분필은 사랑을 싣고",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEICJAPGNILIFJCBPI",
+      "cash_item_description": "모든 무기에 착용이 가능한 무기다.",
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": "레드라벨",
+      "cash_item_coloring_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 300,
+        "saturation": 60,
+        "value": 60
+      },
+      "cash_item_effect_prism": {
+        "color_range": "전체 색상 계열",
+        "hue": 300,
+        "saturation": 60,
+        "value": 60
+      },
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "반지",
+      "cash_item_equipment_slot": "반지1",
+      "cash_item_name": "미야오 캣 이펙트 반지",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEODJOHJ",
+      "cash_item_description": "착용 시 일부 동작에서 공중에 높이 떠있을 수 있습니다.",
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "반지",
+      "cash_item_equipment_slot": "반지2",
+      "cash_item_name": "엔젤릭버스터 말풍선 반지",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEODODOE",
+      "cash_item_description": "캐릭터가 대화를 할 때, 엔젤릭버스터 말풍선이 나타난다.",
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    },
+    {
+      "cash_item_equipment_part": "반지",
+      "cash_item_equipment_slot": "반지3",
+      "cash_item_name": "엔젤릭버스터 명찰 반지",
+      "cash_item_icon": "https://open.api.nexon.com/static/maplestory/item/icon/KEODOCOG",
+      "cash_item_description": "캐릭터 이름이 엔젤릭버스터 명찰에 나타난다.",
+      "cash_item_option": [],
+      "date_expire": null,
+      "date_option_expire": null,
+      "cash_item_label": null,
+      "cash_item_coloring_prism": null,
+      "cash_item_effect_prism": null,
+      "item_gender": null,
+      "skills": [],
+      "freestyle_flag": "0",
+      "emotion_name": null
+    }
+  ],
+  "additional_cash_item_equipment_base": [],
+  "additional_cash_item_equipment_preset_1": [],
+  "additional_cash_item_equipment_preset_2": [],
+  "additional_cash_item_equipment_preset_3": []
+}
