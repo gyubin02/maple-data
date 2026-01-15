@@ -16,25 +16,14 @@ from peft import PeftModel
 from pydantic import BaseModel, Field
 from transformers import SiglipModel, SiglipProcessor
 
+from keyword_filters import (
+    CATEGORY_SYNONYMS,
+    COLOR_SYNONYMS,
+    VIBE_SYNONYMS,
+    extract_keywords,
+)
 
 DATA_DIR = (Path(__file__).resolve().parent / "data/2026-01-11").resolve()
-CATEGORY_SYNONYMS = {
-    "모자": ["모자", "헬름", "헬멧", "햇", "보닛", "캡"],
-    "신발": ["신발", "슈즈", "부츠", "샌들"],
-    "장갑": ["장갑", "글러브"],
-    "무기": ["무기", "검", "소드", "대검", "스태프", "완드", "활", "석궁", "창", "스피어", "폴암", "도끼", "단검", "너클", "건", "총", "클로"],
-    "상의": ["상의", "셔츠", "자켓", "코트", "로브", "블라우스"],
-    "하의": ["하의", "바지", "팬츠", "스커트"],
-    "망토": ["망토", "케이프", "cape"],
-    "귀걸이": ["귀걸이", "귀고리", "이어링"],
-    "반지": ["반지", "링"],
-    "목걸이": ["목걸이", "펜던트", "네클리스"],
-    "벨트": ["벨트"],
-    "얼굴장식": ["얼굴장식", "얼굴 장식"],
-    "눈장식": ["눈장식", "눈 장식"],
-    "보조무기": ["보조무기", "보조 무기"],
-    "방패": ["방패", "쉴드", "실드"],
-}
 
 
 class SearchRequest(BaseModel):
@@ -51,21 +40,59 @@ def resolve_adapter_path(adapter_path: Path) -> Path:
     return adapter_path
 
 
-def extract_category_keywords(query: str) -> List[str]:
-    keywords: List[str] = []
-    lowered_query = query.lower()
-    for category, variants in CATEGORY_SYNONYMS.items():
-        for variant in variants:
-            if variant.lower() in lowered_query and category not in keywords:
-                keywords.append(category)
-                break
-    return keywords
+def extract_query_filters(query: str) -> Dict[str, List[str]]:
+    texts = [query]
+    return {
+        "categories": extract_keywords(texts, CATEGORY_SYNONYMS),
+        "colors": extract_keywords(texts, COLOR_SYNONYMS),
+        "vibes": extract_keywords(texts, VIBE_SYNONYMS),
+    }
 
 
-def build_metadata_filter(keywords: List[str]) -> Dict[str, Any] | None:
-    if not keywords:
+def build_where_filter(
+    categories: List[str], colors: List[str], vibes: List[str]
+) -> Dict[str, Any] | None:
+    clauses: List[Dict[str, Any]] = []
+    if categories:
+        clauses.append({"category": {"$in": categories}})
+    if colors:
+        clauses.append({"$and": [{f"color_{color}": True} for color in colors]})
+    if vibes:
+        clauses.append({"$and": [{f"vibe_{vibe}": True} for vibe in vibes]})
+    if not clauses:
         return None
-    return {"category": {"$in": keywords}}
+    if len(clauses) == 1:
+        return clauses[0]
+    return {"$and": clauses}
+
+
+def build_filter_candidates(filters: Dict[str, List[str]]) -> List[Dict[str, Any]]:
+    parts = {
+        "category": filters.get("categories") or [],
+        "color": filters.get("colors") or [],
+        "vibe": filters.get("vibes") or [],
+    }
+    candidates: List[Dict[str, Any]] = []
+    combos = [
+        ("category", "color", "vibe"),
+        ("category", "color"),
+        ("category", "vibe"),
+        ("color", "vibe"),
+        ("category",),
+        ("color",),
+        ("vibe",),
+    ]
+    for combo in combos:
+        if not all(parts[facet] for facet in combo):
+            continue
+        where_filter = build_where_filter(
+            parts["category"] if "category" in combo else [],
+            parts["color"] if "color" in combo else [],
+            parts["vibe"] if "vibe" in combo else [],
+        )
+        if where_filter:
+            candidates.append(where_filter)
+    return candidates
 
 
 @asynccontextmanager
@@ -150,11 +177,11 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
 
     query_embedding = text_embeds[0].detach().cpu().tolist()
 
-    filter_keywords = extract_category_keywords(query)
-    where_filter = build_metadata_filter(filter_keywords)
+    filter_parts = extract_query_filters(query)
+    where_candidates = build_filter_candidates(filter_parts)
 
     results = None
-    if where_filter:
+    for where_filter in where_candidates:
         try:
             results = collection.query(
                 query_embeddings=[query_embedding],
@@ -163,8 +190,11 @@ def search(payload: SearchRequest) -> Dict[str, Any]:
                 include=["distances", "metadatas"],
             )
         except Exception as exc:  # noqa: BLE001
-            print(f"Filtered query failed ({exc}); falling back to vector-only.")
+            print(f"Filtered query failed ({exc}); trying less strict.")
             results = None
+            continue
+        if results and results.get("ids") and results["ids"][0]:
+            break
 
     if not results or not results.get("ids") or not results["ids"][0]:
         results = collection.query(

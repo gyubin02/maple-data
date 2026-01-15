@@ -14,25 +14,15 @@ from PIL import Image
 from tqdm import tqdm
 from transformers import SiglipModel, SiglipProcessor
 
+from keyword_filters import (
+    CATEGORY_SYNONYMS,
+    COLOR_SYNONYMS,
+    VIBE_SYNONYMS,
+    extract_keywords,
+)
+
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif"}
 T = TypeVar("T")
-CATEGORY_SYNONYMS = {
-    "모자": ["모자", "헬름", "헬멧", "햇", "보닛", "캡"],
-    "신발": ["신발", "슈즈", "부츠", "샌들"],
-    "장갑": ["장갑", "글러브"],
-    "무기": ["무기", "검", "소드", "대검", "스태프", "완드", "활", "석궁", "창", "스피어", "폴암", "도끼", "단검", "너클", "건", "총", "클로"],
-    "상의": ["상의", "셔츠", "자켓", "코트", "로브", "블라우스"],
-    "하의": ["하의", "바지", "팬츠", "스커트"],
-    "망토": ["망토", "케이프", "cape"],
-    "귀걸이": ["귀걸이", "귀고리", "이어링"],
-    "반지": ["반지", "링"],
-    "목걸이": ["목걸이", "펜던트", "네클리스"],
-    "벨트": ["벨트"],
-    "얼굴장식": ["얼굴장식", "얼굴 장식"],
-    "눈장식": ["눈장식", "눈 장식"],
-    "보조무기": ["보조무기", "보조 무기"],
-    "방패": ["방패", "쉴드", "실드"],
-}
 
 
 def parse_args() -> argparse.Namespace:
@@ -154,12 +144,39 @@ def detect_category(texts: List[str]) -> Optional[str]:
     return None
 
 
-def load_labels(labels_path: Path) -> Dict[str, Dict[str, str]]:
+def collect_label_texts(
+    item_name: Optional[str],
+    label_ko: Optional[str],
+    tags: List[str],
+    query_variants: List[str],
+    attributes: Dict[str, object],
+    item_type_guess: Optional[str],
+) -> List[str]:
+    texts: List[str] = []
+    for value in (item_name, label_ko, item_type_guess):
+        if value:
+            texts.append(value)
+    texts.extend(tag for tag in tags if tag)
+    texts.extend(variant for variant in query_variants if variant)
+    for value in attributes.values():
+        if isinstance(value, list):
+            for entry in value:
+                entry_norm = normalize_label(entry)
+                if entry_norm:
+                    texts.append(entry_norm)
+        else:
+            entry_norm = normalize_label(value)
+            if entry_norm:
+                texts.append(entry_norm)
+    return texts
+
+
+def load_labels(labels_path: Path) -> Dict[str, Dict[str, object]]:
     if not labels_path.exists():
         print(f"Labels file not found, continuing without labels: {labels_path}")
         return {}
 
-    label_map: Dict[str, Dict[str, str]] = {}
+    label_map: Dict[str, Dict[str, object]] = {}
     with labels_path.open("r", encoding="utf-8") as file:
         for line_no, line in enumerate(file, start=1):
             line = line.strip()
@@ -180,6 +197,15 @@ def load_labels(labels_path: Path) -> Dict[str, Dict[str, str]]:
             tags = record.get("tags_ko") or []
             tag_texts = [normalize_label(tag) for tag in tags if tag is not None]
             tag_texts = [tag for tag in tag_texts if tag]
+            query_variants = record.get("query_variants_ko") or []
+            variant_texts = [
+                normalize_label(variant)
+                for variant in query_variants
+                if variant is not None
+            ]
+            variant_texts = [variant for variant in variant_texts if variant]
+            attributes = record.get("attributes") or {}
+            item_type_guess = normalize_label(attributes.get("item_type_guess"))
             if not item_name and not label_ko and not tag_texts:
                 continue
 
@@ -190,9 +216,27 @@ def load_labels(labels_path: Path) -> Dict[str, Dict[str, str]]:
             if label_ko:
                 label_map[normalized_path]["label_ko"] = label_ko
                 label_map[normalized_path]["label"] = label_ko
-            category = detect_category([item_name or "", label_ko or "", *tag_texts])
+            texts = collect_label_texts(
+                item_name,
+                label_ko,
+                tag_texts,
+                variant_texts,
+                attributes,
+                item_type_guess,
+            )
+            category = detect_category(texts)
             if category:
                 label_map[normalized_path]["category"] = category
+            colors = extract_keywords(texts, COLOR_SYNONYMS)
+            if colors:
+                label_map[normalized_path]["colors"] = colors
+                for color in colors:
+                    label_map[normalized_path][f"color_{color}"] = True
+            vibes = extract_keywords(texts, VIBE_SYNONYMS)
+            if vibes:
+                label_map[normalized_path]["vibes"] = vibes
+                for vibe in vibes:
+                    label_map[normalized_path][f"vibe_{vibe}"] = True
 
     print(f"Loaded labels for {len(label_map)} images from {labels_path}")
     return label_map
