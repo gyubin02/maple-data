@@ -229,12 +229,10 @@ def load_labels(labels_path: Path) -> Dict[str, Dict[str, object]]:
                 label_map[normalized_path]["category"] = category
             colors = extract_keywords(texts, COLOR_SYNONYMS)
             if colors:
-                label_map[normalized_path]["colors"] = colors
                 for color in colors:
                     label_map[normalized_path][f"color_{color}"] = True
             vibes = extract_keywords(texts, VIBE_SYNONYMS)
             if vibes:
-                label_map[normalized_path]["vibes"] = vibes
                 for vibe in vibes:
                     label_map[normalized_path][f"vibe_{vibe}"] = True
 
