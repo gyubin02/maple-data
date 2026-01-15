@@ -29,10 +29,10 @@
   "rank_pattern": {},
   "revision": null,
   "target_modules": [
-    "v_proj",
-    "out_proj",
     "k_proj",
-    "q_proj"
+    "q_proj",
+    "out_proj",
+    "v_proj"
   ],
   "target_parameters": null,
   "task_type": "FEATURE_EXTRACTION",
